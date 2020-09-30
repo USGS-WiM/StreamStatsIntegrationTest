@@ -13,9 +13,27 @@ StreamStats integration tests test the communication paths between different par
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
 
 ### Installing
-### Dependancies
+### Dependencies
 [ python WIMLib package](https://pypi.org/project/WIMLib/): `pip install WIMLib`
 
+### How to run
+1. Make sure you are running right version of [python](https://www.python.org/downloads/) (3+)
+2. Make sure all dependencies and modules are installed.
+3. Change config.json from StreamStatsIntegrationTest/src folder to match path of your folders
+Example:
+  "workingdirectory": "D:/Work/Integration/StreamStatsIntegrationTest/Test",
+  "outputFile": "D:/Work/Integration/StreamStatsIntegrationTest/InputCoordinates.csv"
+4. If error ModuleNotFoundError persists make sure to add folder path to the sys of Python 3
+[sys] (https://docs.python.org/3.7/library/sys.html) specifies folders where python searches for files
+
+import sys
+sys.path.append ('D:\\Work\\Integration\\StreamStatsIntegrationTest\\src')
+5. If error finding config.json file persists - setup a working directory as following, change line 25
+
+os.chdir ('D:\\Work\\Integration\\StreamStatsIntegrationTest\\src\\')
+config = json.load(open('config.json'))
+
+6. Run
 
 ## Contributing
 
