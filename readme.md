@@ -3,19 +3,32 @@
 # StreamStats Integration test
 
 StreamStats integration tests test the communication paths between different parts of the module to show that all modules/services are working correctly together.
-###Purpose:
+
+### Purpose:
 * testing that separately developed modules worked together properly
 * test that a system of multiple modules worked as expected.
 * supporting *temporal* accuracy of results.
 
-###Method:
+### Method:
 
-Script is accessing 44 reference sites from Contiguous United States and attributes from current Stream Stats REST API services. Reference sites contain information about sites basin characteristics, basin geometry information - defining basin area and flow statistics. Information returned from streamstats services if is missing in the local folders (BasinChar and BasinDel) are added. Following run returns from the rest api are compared against populated folders (BasinDel and BasinChar). Each cycle a summary file generated inside of StreamStatsIntegrationTest/Test folder. If there any difference between outputs, it will display corresponding attribute and values from both files.
+Script is accessing 44 reference sites from Contiguous United States and attributes from current streamstats REST API services. Reference sites contain information about sites basin characteristics, basin geometry information - defining basin area, and flow statistics. 
+
+  Information returned from streamstats services, if is missing, in the local folders (BasinChar and BasinDel), are added.
+  
+  Following run returns from the rest api are compared against populated folders (BasinDel and BasinChar). 
+  
+  Each cycle a summary file generated inside of StreamStatsIntegrationTest/Test folder. If there any difference between outputs, it will display corresponding attribute and values from both files.
 
 
-###Testing
+### Testing:
 
-Information about reference sites can be obtained from [here](https://raw.githubusercontent.com/USGS-WiM/StreamStats-Setup/master/batchTester/testSites.geojson). To compare results from local with remote user can run StreamStatsIntegrationTest/src/TestAgent/TestCaseGithub.py script. Make sure to follow "How to Run" instructions same way as you would with main - IntegrationWrapperV2.py script. Results of test run are generated inside of the StreamStatsIntegrationTest/Test folder same way as in main run.
+Information about reference sites can be obtained from [here](https://raw.githubusercontent.com/USGS-WiM/StreamStats-Setup/master/batchTester/testSites.geojson). 
+
+To compare results from local with remote user can run StreamStatsIntegrationTest/src/TestAgent/TestCaseGithub.py script. 
+
+Make sure to follow "How to Run" instructions same way as you would with main - IntegrationWrapperV2.py script. 
+
+Results of test run are generated inside of the StreamStatsIntegrationTest/Test folder same way as in main run.
 
 
 ## Getting Started
