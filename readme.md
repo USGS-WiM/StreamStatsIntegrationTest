@@ -6,6 +6,16 @@ StreamStats integration tests test the communication paths between different par
 ###Purpose:
 * testing that separately developed modules worked together properly
 * test that a system of multiple modules worked as expected.
+* supporting *temporal* accuracy of results.
+
+###Method:
+
+Script is accessing 44 reference sites from Contiguous United States and attributes from current Stream Stats REST API services. Reference sites contain information about sites basin characteristics, basin geometry information - defining basin area and flow statistics. Information returned from streamstats services if is missing in the local folders (BasinChar and BasinDel) are added. Following run returns from the rest api are compared against populated folders (BasinDel and BasinChar). Each cycle a summary file generated inside of StreamStatsIntegrationTest/Test folder. If there any difference between outputs, it will display corresponding attribute and values from both files.
+
+
+###Testing
+
+Information about reference sites can be obtained from [here](https://raw.githubusercontent.com/USGS-WiM/StreamStats-Setup/master/batchTester/testSites.geojson). To compare results from local with remote user can run StreamStatsIntegrationTest/src/TestAgent/TestCaseGithub.py script. Make sure to follow "How to Run" instructions same way as you would with main - IntegrationWrapperV2.py script. Results of test run are generated inside of the StreamStatsIntegrationTest/Test folder same way as in main run.
 
 
 ## Getting Started
@@ -18,30 +28,30 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### How to run
 1. Make sure you are running right version of [python](https://www.python.org/downloads/) (3+)
-2. Make sure all dependencies and modules are installed.
-3. Change config.json from StreamStatsIntegrationTest/src folder to match path of your folders
+2. Open /StreamStatsIntegrationTest/src/IntegrationWrapperV2.py in Python
+3. Make sure all dependencies and modules are installed.
+4. Change config.json from StreamStatsIntegrationTest/src folder to match path of your folders
 
 Example:
 ```{python}
   "workingdirectory": "D:/Work/Integration/StreamStatsIntegrationTest/Test",
   "outputFile": "D:/Work/Integration/StreamStatsIntegrationTest/InputCoordinates.csv"
   ```
-4. If error ModuleNotFoundError persists make sure to add folder path to the sys of Python 3
-[sys] (https://docs.python.org/3.7/library/sys.html) specifies folders where python searches for files
+5. If error ModuleNotFoundError persists make sure to add folder path to the [sys](https://docs.python.org/3.7/library/sys.html) of Python 3.
 
 ```{python}
 import sys
 sys.path.append ('D:\\Work\\Integration\\StreamStatsIntegrationTest\\src')
 ```
 
-5. If error finding config.json file persists - setup a working directory as following, change line 25
+6. If error finding config.json file persists - setup a working directory as following, change line 25
 
 ```{python}
 os.chdir ('D:\\Work\\Integration\\StreamStatsIntegrationTest\\src\\')
 config = json.load(open('config.json'))
 ```
 
-6. Run
+7. Run
 
 ## Contributing
 
