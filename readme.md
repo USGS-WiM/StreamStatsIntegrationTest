@@ -26,12 +26,16 @@ Example:
 4. If error ModuleNotFoundError persists make sure to add folder path to the sys of Python 3
 [sys] (https://docs.python.org/3.7/library/sys.html) specifies folders where python searches for files
 
+'''python
 import sys
 sys.path.append ('D:\\Work\\Integration\\StreamStatsIntegrationTest\\src')
+'''
 5. If error finding config.json file persists - setup a working directory as following, change line 25
 
+'''python
 os.chdir ('D:\\Work\\Integration\\StreamStatsIntegrationTest\\src\\')
 config = json.load(open('config.json'))
+'''
 
 6. Run
 
