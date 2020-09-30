@@ -20,9 +20,12 @@ These instructions will get you a copy of the project up and running on your loc
 1. Make sure you are running right version of [python](https://www.python.org/downloads/) (3+)
 2. Make sure all dependencies and modules are installed.
 3. Change config.json from StreamStatsIntegrationTest/src folder to match path of your folders
+
 Example:
+```{python}
   "workingdirectory": "D:/Work/Integration/StreamStatsIntegrationTest/Test",
   "outputFile": "D:/Work/Integration/StreamStatsIntegrationTest/InputCoordinates.csv"
+  ```
 4. If error ModuleNotFoundError persists make sure to add folder path to the sys of Python 3
 [sys] (https://docs.python.org/3.7/library/sys.html) specifies folders where python searches for files
 
