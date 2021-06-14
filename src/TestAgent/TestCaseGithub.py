@@ -69,7 +69,8 @@ fSummary = open (sumPath, 'w+')
 for i in result:
     mismatch = {}
     try:
-        siteid = int(i.get("properties").get("siteid"))  
+        siteid = int(i.get("properties").get("siteid"))
+        rcode = i.get("properties").get("state")
         jsonpath = (bcharpath + "/" + str(siteid) + ".json")    
         
         bcharvalues = i.get("properties").get("testData")
@@ -96,11 +97,11 @@ for i in result:
                 else:
                     None
               
-        fSummary.write ("Results for site: " + str(siteid) + '\n')
+        fSummary.write ("Results for site: " + rcode + ', ' + str(siteid) + '\n')
         fSummary.write (str(mismatch) + '\n')
 
     except:
-        fSummary.write ("Exception error site: " + str(siteid) + '\n')
+        fSummary.write ("Exception error site: " + rcode + ', ' + str(siteid) + '\n')
         None
 fSummary.close ()
 

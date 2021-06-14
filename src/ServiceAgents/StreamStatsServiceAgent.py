@@ -78,10 +78,10 @@ class StreamStatsServiceAgent(object):
             self._sm("StreamstatsService getBChar Error "+tb, "ERROR")
 
 
-    def getFlowStats(self,region,workspaceID,flowstats):
+    def getFlowStats(self,region,workspaceID):
         results={}
         try:            
-            resource = self.resources["flowStats"].format(region, workspaceID,flowstats)          
+            resource = self.resources["flowStats"].format(region, workspaceID)          
             
             try:
                 results = self.Execute(resource)

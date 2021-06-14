@@ -171,3 +171,11 @@ $RECYCLE.BIN/
 
 # Pycharm
 .idea/
+
+# test items
+Test/
+BasinChar/
+BasinDel/
+BasinChar_Test/
+BasinDel_Test/
+FlowStats/

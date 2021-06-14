@@ -48,7 +48,7 @@ class IntigrationTest(object):
             
             parser = argparse.ArgumentParser()
             #Use the following LAT/LON pour point
-            parser.add_argument("-file", help="specifies csv file location including gage lat/long and comid's to estimate", type=str, default = 'D:\ClientData\InputCoordinates.csv') #Change to the location of the csv file
+            parser.add_argument("-file", help="specifies csv file location including gage lat/long and comid's to estimate", type=str, default = './InputCoordinates.csv') #Change to the location of the csv file
             parser.add_argument("-inputEPSG_Code", help="Default WGS 84 (4326),see http://spatialreference.org/ref/epsg/ ", type=int, default = '4326')
             args = parser.parse_args()
             if not os.path.isfile(args.file): raise Exception("File does not exist")
