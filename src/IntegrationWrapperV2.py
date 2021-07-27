@@ -275,6 +275,7 @@ def counterOverwrite (input_txt, param_string):
 
 def compare (inputObj, path, ID, workingDir, 
             HUCID, xy, rcode, servName): #Compare json txt files
+    # TODO: improve notifications of differences, maybe add new property for "oldValue"
     try:  
         refObj = None
         refFile = os.path.join(path, ID+".json") #Get the reference json file from existing root folder

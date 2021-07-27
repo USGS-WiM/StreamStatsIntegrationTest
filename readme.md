@@ -26,6 +26,8 @@ Information about reference sites can be obtained from [here](https://raw.github
 
 To compare results from local with remote user can run StreamStatsIntegrationTest/src/TestAgent/TestCaseGithub.py script. 
 
+To get a geojson to use to update the testSites on GitHub, run the StreamStatsIntegrationTest/src/TestAgent/UpdateTestSites.py script. This should then be used to update the geojson in the StreamStats-Setup repo. If your geojsons are not being read as jsons in VSCode, you can open the geojson file, click the button on the bottom right hand nav bar that says "Plain Text", select "Configure file association for .geojson", and select json. This will allow you to format geojson documents and view with the typical json coloring. 
+
 Make sure to follow "How to Run" instructions same way as you would with main - IntegrationWrapperV2.py script. 
 
 Results of test run are generated inside of the StreamStatsIntegrationTest/Test folder same way as in main run.
