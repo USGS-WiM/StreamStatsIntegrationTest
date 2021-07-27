@@ -45,28 +45,21 @@ These instructions will get you a copy of the project up and running on your loc
 1. Make sure you are running right version of [python](https://www.python.org/downloads/) (3+)
 2. Open /StreamStatsIntegrationTest/src/IntegrationWrapperV2.py in Python
 3. Make sure all dependencies and modules are installed.
-4. Change config.json from StreamStatsIntegrationTest/src folder to match path of your folders
-
-Example:
-```{python}
-  "workingdirectory": "D:/Work/Integration/StreamStatsIntegrationTest/Test",
-  "outputFile": "D:/Work/Integration/StreamStatsIntegrationTest/InputCoordinates.csv"
-  ```
-5. If error ModuleNotFoundError persists make sure to add folder path to the [sys](https://docs.python.org/3.7/library/sys.html) of Python 3.
+4. If error ModuleNotFoundError persists make sure to add folder path to the [sys](https://docs.python.org/3.7/library/sys.html) of Python 3.
 
 ```{python}
 import sys
 sys.path.append ('D:\\Work\\Integration\\StreamStatsIntegrationTest\\src')
 ```
 
-6. If error finding config.json file persists - setup a working directory as following, change line 25
+5. If error finding config.json file persists - setup a working directory as following, change line 25
 
 ```{python}
 os.chdir ('D:\\Work\\Integration\\StreamStatsIntegrationTest\\src\\')
 config = json.load(open('config.json'))
 ```
 
-7. Run
+6. Run
 
 ## Contributing
 
@@ -84,8 +77,8 @@ To push tags to remote origin: `git push origin --tags`
 
 ## Authors
 
-* **[Jeremy Newson](https://www.usgs.gov/staff-profiles/jeremy-k-newson)**  - *Lead Developer* - [USGS Web Informatics & Mapping](https://wim.usgs.gov/)
 * **[Timur Sabitov](https://github.com/tim7en)**  - *Developer* - [USGS Maryland Water Science Center](https://www.usgs.gov/centers/md-de-dc-water)
+* **[Katrin Jacobsen](https://www.usgs.gov/staff-profiles/katrin-jacobsen)**  - *Developer* - [USGS Web Informatics and Mapping](https://wim.usgs.gov)
 
 See also the list of [contributors](../../graphs/contributors) who participated in this project.
 
