@@ -173,9 +173,7 @@ $RECYCLE.BIN/
 .idea/
 
 # test items
-Test/
-BasinChar/
-BasinDel/
-BasinChar_Test/
-BasinDel_Test/
-FlowStats/
+Test/*
+BasinChar/*
+BasinDel/*
+FlowStats/*
