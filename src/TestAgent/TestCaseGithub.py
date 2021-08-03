@@ -59,7 +59,7 @@ class testCase(object):
 
 response =  (testCase().LoadJson(None))
 result = response[0]["features"]
-bcharpath = Shared.CheckDirectoryExists(config["referenceFolderBasinChar"])
+bcharpath = config["referenceFolderBasinChar"]
 
 
 

@@ -125,7 +125,14 @@ class StreamStatsServiceAgent(object):
 
     def _sm(self,msg,type="INFO", errorID=0):        
         WiMLogging().sm(msg,type="INFO", errorID=0)
-        #print type, msg
+        #print type, 
+        
+    def CheckDirectoryExists(directory):
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+            WiMLogging().sm("directory created")
+
+        return directory
 
     #endregion
     #region Helper Methods

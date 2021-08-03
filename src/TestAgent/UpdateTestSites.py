@@ -79,7 +79,7 @@ url = './testSites.geojson'
 # you can send the url in LoadJson() if you have the testSites file downloaded locally and want to read and update it there
 response =  (testCase().LoadJson())
 result = response[0]["features"]
-bcharpath = Shared.CheckDirectoryExists(config["referenceFolderBasinChar"])
+bcharpath = config["referenceFolderBasinChar"]
 
 
 

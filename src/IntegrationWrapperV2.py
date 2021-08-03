@@ -59,7 +59,7 @@ args = parser.parse_args()
 #Check if file (Input.csv) is in csv
 print(args.file)
 if not os.path.isfile(args.file): raise Exception ("File does not exist")
-refDir = {"bdel":Shared.CheckDirectoryExists(config["referenceFolderBasinDel"]),"bchar":Shared.CheckDirectoryExists(config["referenceFolderBasinChar"]), "flowstats":Shared.CheckDirectoryExists(config["referenceFolderFlowStats"])}
+refDir = {"bdel": StreamStatsServiceAgent.CheckDirectoryExists(config["referenceFolderBasinDel"]),"bchar":StreamStatsServiceAgent.CheckDirectoryExists(config["referenceFolderBasinChar"]), "flowstats":StreamStatsServiceAgent.CheckDirectoryExists(config["referenceFolderFlowStats"])}
 file = Shared.readCSVFile(args.file)
 #file = Shared.readURL (url)
 
