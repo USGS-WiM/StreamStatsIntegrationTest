@@ -3,7 +3,7 @@
     "baseurl": "https://test.streamstats.usgs.gov",
     "resources": {
       "watershed": "/streamstatsservices/watershed.geojson?rcode={0}&xlocation={1}&ylocation={2}&crs={3}&includeparameters=false&includeflowtypes=false&includefeatures=true",
-      "flowStats": "/streamstatsservices/flowstatistics.json?rcode={0}&workspaceID={1}&includeflowtypes={2}",
+      "flowStats": "/streamstatsservices/flowstatistics.json?rcode={0}&workspaceID={1}&includeflowtypes=true",
       "basinChar": "/streamstatsservices/parameters.json?rcode={0}&workspaceID={1}&includeparameters=true" 
     }
   },
@@ -14,9 +14,10 @@
       "models": "/regressionservice/models/{0}/estimate?state={1}"
     }
   },
-  "workingdirectory": "D:/Work/Integration/StreamStatsIntegrationTest/Test",
-  "outputFile": "D:/Work/Integration/StreamStatsIntegrationTest/InputCoordinates.csv",
-  "referenceFolderBasinDel": "D:/Work/Integration/StreamStatsIntegrationTest/BasinDel",
-  "referenceFolderBasinChar": "D:/Work/Integration/StreamStatsIntegrationTest/BasinChar",
-  "referenceCoordinates": "D:/Work/Integration/StreamStatsIntegrationTest/InputCoordinates.csv"
+  "workingdirectory": "./Test",
+  "outputFile": "./InputCoordinates.csv",
+  "referenceFolderBasinDel": "./BasinDel",
+  "referenceFolderBasinChar": "./BasinChar",
+  "referenceFolderFlowStats": "./FlowStats",
+  "referenceCoordinates": "./InputCoordinates.csv"
 }

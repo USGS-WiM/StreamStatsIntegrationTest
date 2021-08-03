@@ -16,7 +16,7 @@ class testCase(object):
         #region Constructor
     def __init__(self):
         try:
-            self.gitUrl = Config()["TestCase"]["gitUrl"];
+            self.gitUrl = Config()["TestCase"]["gitUrl"]
         except:
             self.gitUrl = None
 
@@ -27,22 +27,35 @@ class testCase(object):
     def __exit__(self, exc_type, exc_value, traceback):
         self.gitUrl=None
     
-    def LoadJson (self, url):
+    def LoadJson (self, url = None):
         try:
-            if self.gitUrl == None:
-                self.gitUrl = "https://raw.githubusercontent.com/USGS-WiM/StreamStats-Setup/master/batchTester/testSites.geojson"
-            else:
-                self.gitUrl = url
-            try:
-                response = requests.get(self.gitUrl)
+            if self.gitUrl != None and url == None: 
+                url = self.gitUrl
+            elif self.gitUrl == None and url == None:
+                url = "https://raw.githubusercontent.com/USGS-WiM/StreamStats-Setup/master/batchTester/testSites.geojson"
+            #try:
+            if (os.path.exists(url)):
+                with open(url) as fp:
+                    response = json.load(fp)
+                    return [response, '']
+            else: 
+                response = requests.get(url)
                 return [response.json(), response.headers]
-            except:
-                self._sm("Error: file " + os.path.basename(self.gitUrl) + "doesn't exist", "ERROR")
-                return ''
+            #except:
+            #    self._sm("Error: file " + os.path.basename(url) + "doesn't exist", "ERROR")
+            #    return ''
         except:
             tb = traceback.format_exc()
             self._sm("StreamstatsService getBChar Error "+tb, "ERROR")
             return json
+
+    def saveJson(self, url, data):
+        try:
+            with open(url, "w") as fp:
+                json.dump(data[0], fp)
+        except:
+            tb = traceback.format_exc()
+            self._sm("StreamstatsService getBChar Error "+tb, "ERROR")
             
     def FindString (self, name, userdict):
         for i in userdict:
@@ -51,13 +64,20 @@ class testCase(object):
             else:
                 None
 
+    def updateValue (self, name, userdict, value):
+        for i in userdict:
+            if (i.get("Label") == name):
+                i["Value"] = value
+
     def _sm(self,msg,type="INFO", errorID=0):        
         WiMLogging().sm(msg,type="INFO", errorID=0)
         
         
-        
+# set url to wherever you want the updated site list to end up
+url = './testSites.geojson'
 
-response =  (testCase().LoadJson(None))
+# you can send the url in LoadJson() if you have the testSites file downloaded locally and want to read and update it there
+response =  (testCase().LoadJson())
 result = response[0]["features"]
 bcharpath = config["referenceFolderBasinChar"]
 
@@ -78,7 +98,6 @@ for i in result:
 
         with open(jsonpath, 'r') as f:
             bchar = json.load(f)    
-    
         for item in bchar:
             for j in item:
                 if list (j.keys())[0] == "code":
@@ -86,14 +105,18 @@ for i in result:
                     myval = testCase().FindString ( varname, bcharvalues)
                 elif list (j.keys())[0] == "value":
                     if (myval is None):
-                        None
+                        # value doesn't exist in geojson, add here
+                        newobject = {'Label': varname, 'Value': float(list(j.values())[0])}
+                        bcharvalues.append(newobject)
                     else:          
                         if (float(myval) == float(list(j.values())[0])):
                             print ("")
                         else:
+                            # here, update geojson using varname and myval
                             mismatch["Attribute"] = varname
                             mismatch['Reference'] = float(myval)
                             mismatch['Server'] = float (list(j.values())[0])
+                            testCase().updateValue (varname, bcharvalues, float(list(j.values())[0]))
                 else:
                     None
               
@@ -104,4 +127,5 @@ for i in result:
         fSummary.write ("Exception error site: " + rcode + ', ' + str(siteid) + '\n')
         None
 fSummary.close ()
-
+#save geojson file here
+testCase().saveJson(url, response)

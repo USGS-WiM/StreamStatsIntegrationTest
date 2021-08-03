@@ -33,13 +33,18 @@ fSummary.write ( 'Starting Summary'+ '\n')
 fSummary.write ( 'Total all runs: 0'+ '\n')
 fSummary.write ( 'Total bchar runs: 0'+ '\n')
 fSummary.write ( 'Total bdel runs: 0'+ '\n')
+fSummary.write ( 'Total flowstats runs: 0'+ '\n')
 fSummary.write ( 'Total bcharNoteq runs: 0'+ '\n')
 fSummary.write ( 'Total bdelNoteq runs: 0'+ '\n')
+fSummary.write ( 'Total flowstatsNoteq runs: 0'+ '\n')
 fSummary.write ( 'Total bcharfail runs: 0'+ '\n')
 fSummary.write ( 'Total bdelfail runs: 0'+ '\n')
+fSummary.write ( 'Total flowstatsfail runs: 0'+ '\n')
 fSummary.write ( 'Total bcharNew runs: 0'+ '\n')
 fSummary.write ( 'Total bdelNew runs: 0'+ '\n')
+fSummary.write ( 'Total flowstatsNew runs: 0'+ '\n')
 fSummary.write ( 'Total bcharrep runs: 0'+ '\n')
+fSummary.write ( 'Total flowstatsrep runs: 0'+ '\n')
 fSummary.close ()
 WiMLogging (workingDir)
 
@@ -52,8 +57,9 @@ parser.add_argument ("-inputEPSG_Code", help="Default WGS 84 (4326),see http://s
 args = parser.parse_args()
 
 #Check if file (Input.csv) is in csv
+print(args.file)
 if not os.path.isfile(args.file): raise Exception ("File does not exist")
-refDir = {"bdel":config["referenceFolderBasinDel"],"bchar":config["referenceFolderBasinChar"]}
+refDir = {"bdel": StreamStatsServiceAgent.CheckDirectoryExists(config["referenceFolderBasinDel"]),"bchar":StreamStatsServiceAgent.CheckDirectoryExists(config["referenceFolderBasinChar"]), "flowstats":StreamStatsServiceAgent.CheckDirectoryExists(config["referenceFolderFlowStats"])}
 file = Shared.readCSVFile(args.file)
 #file = Shared.readURL (url)
 
@@ -112,6 +118,9 @@ def run_func(rcode, x, y,
     response = None
     resultBChar = None
     resultBDel = None
+    bcharServer = None
+    flowStatsServer = None
+    flowStatsResponse = None
 
     with StreamStatsServiceAgent() as sa: 
         try:
@@ -141,12 +150,27 @@ def run_func(rcode, x, y,
                     else:
                         #counterOverwrite (sumPath, 'bchar')
                         responseBChar = sa.getBChar (rcode,response['workspaceID']) #get basin characteristics from the server
-                        return (responseBChar)
+                        return responseBChar
                 except:
                     response = rcBDel (3)
                     j+=1
                     WiMLogging().sm('Attempting rcBChar')
-                    rcBChar (rcode, response[0], j)
+                    rcBChar(rcode, response[0], j)
+            
+            @timing
+            def rcFlowStats ( rcode, response, j = 0):
+                try:
+                    if (j>4):
+                        return None
+                    else:
+                        #counterOverwrite (sumPath, 'bchar')
+                        responseFlowStats = sa.getFlowStats (rcode,response['workspaceID']) #get basin characteristics from the server
+                        return responseFlowStats
+                except:
+                    response = rcBDel (3)
+                    j+=1
+                    WiMLogging().sm('Attempting rcFlowStats')
+                    rcFlowStats(rcode, response[0], j)
                     
 
             #Get response of rcBDel
@@ -155,17 +179,24 @@ def run_func(rcode, x, y,
             HUCID = response[0] ['featurecollection'][1]['feature']['features'][0]['properties']['HUCID']
             xy = [x,y]
             bdelServer = response[1]['usgswim-hostname']
-            resultBChar = rcBChar (rcode, response[0], 0)
+
+            resultBChar = rcBChar(rcode, response[0], 0)
             bcharServer = resultBChar[1]['usgswim-hostname']
+
+            flowStatsResponse = rcFlowStats(rcode, response[0], 0)
+            resultFlowStats = flowStatsResponse[0]
+            flowStatsServer = flowStatsResponse[1]['usgswim-hostname']
+
 
         except:
             if response == None:
                 resultBDel = None
                 resultBChar = None
+                resultFlowStats = None
 
         if resultBDel == None:
             fSummary = open(sumPath, 'a') 
-            fSummary.write (str(siteIdentifier)+ ':' + ' Missing Return for BDel'+ '\n')
+            fSummary.write (rcode + ', ' + str(siteIdentifier)+ ':' + ' Missing Return for BDel'+ '\n')
             counterOverwrite (sumPath, 'bdelfail')
             fSummary.close ()
             print ("Finished: ", siteIdentifier)
@@ -175,9 +206,9 @@ def run_func(rcode, x, y,
                     workingDir, HUCID, xy, rcode,bdelServer)
 
         
-        if resultBChar == None:
+        if bcharServer == None or resultBChar == None:
             fSummary = open(sumPath, 'a') 
-            fSummary.write (str(siteIdentifier)+ ':' + ' Missing Return for BChar'+ '\n')
+            fSummary.write (rcode + ', ' + str(siteIdentifier)+ ':' + ' Missing Return for BChar'+ '\n')
             counterOverwrite (sumPath, 'bcharfail')
             fSummary.close ()
             print ("Finished with error: ", siteIdentifier)
@@ -185,6 +216,18 @@ def run_func(rcode, x, y,
         else:
             compare(resultBChar, path.get("bchar"), siteIdentifier,
                     workingDir, HUCID, xy, rcode, bcharServer)
+
+        if flowStatsServer == None or resultFlowStats == None:
+            fSummary = open(sumPath, 'a') 
+            fSummary.write (rcode + ', ' + str(siteIdentifier)+ ':' + ' Missing Return for FlowStats'+ '\n')
+            counterOverwrite (sumPath, 'flowstatfail')
+            fSummary.close ()
+            print ("Finished with error: ", siteIdentifier)
+            WiMLogging().sm ("{0} Failed to return from service FlowStats".format(siteIdentifier))
+        else:
+            ##TODO: getting issues with dumping the json in the files, it's stopping at the comma...
+            compare(resultFlowStats, path.get("flowstats"), siteIdentifier,
+                    workingDir, HUCID, xy, rcode, flowStatsServer)
 
     print ("Finished: ", siteIdentifier)
 
@@ -209,7 +252,9 @@ def counterOverwrite (input_txt, param_string):
     datList = datas
     datas = datas.split('\n')
     del datas[len(datas)-1]
-    
+
+    repline = None
+    newline = None
     for line in datas:
         vList = (line.split())
         if (vList[1] == param_string):
@@ -221,19 +266,21 @@ def counterOverwrite (input_txt, param_string):
             repline = line
     
     # Write the file out again
-    with open(input_txt, 'w') as myfile:
-        datList = datList.replace(repline, newline)
-        myfile.write(datList)
+    if (repline is not None and newline is not None):
+        with open(input_txt, 'w') as myfile:
+            datList = datList.replace(repline, newline)
+            myfile.write(datList)
     myfile.close ()
 
 
 def compare (inputObj, path, ID, workingDir, 
             HUCID, xy, rcode, servName): #Compare json txt files
+    # TODO: improve notifications of differences, maybe add new property for "oldValue"
     try:  
         refObj = None
         refFile = os.path.join(path, ID+".json") #Get the reference json file from existing root folder
         
-        if isinstance(inputObj[0], dict): #Condition: If the inner object of the list is dictionary
+        if isinstance(inputObj[0], dict) and path.find('Char')>0: #Condition: If the inner object of the list is dictionary
             inputPars = inputObj[0]['parameters']
             i = 0
             dictlist = [[] for _ in range (len(inputPars))] #Initialize list of lists
@@ -290,7 +337,7 @@ def compare (inputObj, path, ID, workingDir,
                         counterOverwrite (sumPath, 'bcharrep')
                     counterOverwrite (sumPath, 'bchar')
                     fSummary.close ()
-                else:
+                elif (path.find('Del')>0):
                     fSummary = open(sumPath, 'a') 
                     fSummary.write (str(ID)+ ':' + ' BDel not Equal'+ '\n')
                     fSummary.write (str(ID)+ ':' + str(HUCID) + ' HUCID'+ '\n')
@@ -301,39 +348,90 @@ def compare (inputObj, path, ID, workingDir,
                     counterOverwrite (sumPath, 'bdelNoteq')
                     counterOverwrite (sumPath, 'bdel')
                     fSummary.close ()
+                else:
+                    fSummary = open(sumPath, 'a') 
+                    fSummary.write (str(ID)+ ':' + ' FlowStats not Equal'+ '\n')
+                    fSummary.write (str(ID)+ ':' + str(HUCID) + ' HUCID'+ '\n')
+                    fSummary.write (str(ID)+ ':' + str(xy) +' xy coordinates'+ '\n')
+                    fSummary.write (str(ID)+ ':' + str(rcode) +' State'+ '\n')
+                    fSummary.write (str(ID)+ ':' + str(servName) +' Server '+ '\n') 
+                    fSummary.write (str(ID)+ ':' + str(dif) +' Difference between NewCall and Ref'+ '\n')
+                    counterOverwrite (sumPath, 'flowstatsNoteq')
+                    X1 = refObj
+                    X2 = inputObj
+                    #merge two dictionaries and add missing values if any
+                    dictOutput = []
+                    for i in range (0, len(X1)):
+                        finalMap1 = {}
+                        for d in X1[i]:
+                            finalMap1.update(d)
+                        finalMap2 = {}
+                        for d in X2[i]:
+                            finalMap2.update(d)
+                            
+                        union = dict(finalMap1.items() | finalMap2.items()) #get the union of dictionaries
+                        
+                        dictlist = []
+                        for key in sorted(union): #Sort it by keys and extract each key, next append to the dictionary
+                            dictlist.append({key:str(union[key])})
+                        dictOutput.append(dictlist)
+
+                    if (dictOutput != refObj): #if output dictionary is not equal to the reference one, replace it
+                        WiMLogging().sm ('Updated FlowStats in the reference folder : ', str(ID) )
+                        refObj = dictOutput
+                        fSummary.write (str(ID)+ ':' + 'FlowStats gets replaced'+ '\n')
+                        fSummary.write (str(ID)+ ':' + 'FlowStats in reference' + '\n')
+                        fSummary.write (refObj)
+                        fSummary.write (str(ID)+ ':' + 'FlowStats from server call' + '\n')
+                        fSummary.write (dictOutput)
+                        counterOverwrite (sumPath, 'flowstatsrep')
+                    counterOverwrite (sumPath, 'flowstats')
+                    fSummary.close ()
                 WiMLogging().sm("Not equal Json's"+" "+ID)
                 writeToJSONFile(workingDir,ID+"_"+str(path.rsplit('/', 1)[-1]),inputObj) #Store in log folder
             else:
                 if (path.find('Char')>0):
                     fSummary = open(sumPath, 'a') 
-                    fSummary.write (str(ID)+ ':' + 'BChar Equal Jsons' + '\n')
+                    fSummary.write (rcode + ', ' + str(ID)+ ':' + 'BChar Equal Jsons' + '\n')
                     counterOverwrite (sumPath, 'bchar')
+                    fSummary.close ()
+                elif (path.find('Del')>0):
+                    fSummary = open(sumPath, 'a') 
+                    fSummary.write (rcode + ', ' + str(ID)+ ':' + 'BDel Equal Jsons' + '\n')
+                    counterOverwrite (sumPath, 'bdel')
                     fSummary.close ()
                 else:
                     fSummary = open(sumPath, 'a') 
-                    fSummary.write (str(ID)+ ':' + 'BDel Equal Jsons' + '\n')
-                    counterOverwrite (sumPath, 'bdel')
+                    fSummary.write (rcode + ', ' + str(ID)+ ':' + 'FlowStats Equal Jsons' + '\n')
+                    counterOverwrite (sumPath, 'flowstats')
                     fSummary.close ()
                 tb = traceback.format_exc()
                 WiMLogging().sm("Equal Json's"+" "+ID+" "+ tb) #Don't create file
         else:
             if (path.find('Char')>0):#file not in reference folder, Create it
                 fSummary = open(sumPath, 'a') 
-                fSummary.write (str(ID)+ ':' + 'BChar New'+ '\n')
+                fSummary.write (rcode + ', ' + str(ID)+ ':' + 'BChar New'+ '\n')
                 counterOverwrite (sumPath, 'bcharNew')
                 counterOverwrite (sumPath, 'bchar')
                 fSummary.close ()
-            else:
+            elif (path.find('Del')>0):
                 fSummary = open(sumPath, 'a') 
-                fSummary.write (str(ID)+ ':' + ' BDel New'+ '\n')
+                fSummary.write (rcode + ', ' + str(ID)+ ':' + ' BDel New'+ '\n')
                 counterOverwrite (sumPath, 'bdelNew')
                 counterOverwrite (sumPath, 'bdel')
+                fSummary.close()
+            else:
+                fSummary = open(sumPath, 'a') 
+                fSummary.write (rcode + ', ' + str(ID)+ ':' + ' FlowStats New'+ '\n')
+                counterOverwrite (sumPath, 'flowstatsNew')
+                counterOverwrite (sumPath, 'flowstats')
                 fSummary.close()
             WiMLogging().sm("File not in reference folder"+" "+refFile)
             writeToJSONFile(path, ID,inputObj)
     except:
         counterOverwrite (sumPath, 'bcharfail')
         counterOverwrite (sumPath, 'bdelfail')
+        counterOverwrite (sumPath, 'flowstatsfail')
         tb=traceback.format_exc()
         WiMLogging().sm("Error Comparing "+tb)
         writeToJSONFile(workingDir, ID+"_viaError",{'error':tb})

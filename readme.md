@@ -2,34 +2,37 @@
 
 # StreamStats Integration test
 
-StreamStats integration tests test the communication paths between different parts of the module to show that all modules/services are working correctly together.
+This project contains scripts used for computing StreamStats values for test sites and comparing to previous runs or values stored on GitHub.
 
 ### Purpose:
-* testing that separately developed modules worked together properly
-* test that a system of multiple modules worked as expected.
+* testing that StreamStats functions work together properly
 * supporting *temporal* accuracy of results.
 
 ### Method:
 
-Script is accessing 44 reference sites from Contiguous United States and attributes from current streamstats REST API services. Reference sites contain information about sites basin characteristics, basin geometry information - defining basin area, and flow statistics. 
+This script delineates various locations across the Contiguous United States and computes basin characteristics and flow statistics from the StreamStats REST API services. A list of values on GitHub also provides a means to check the outputs from a list of known values, and a script allows you to produce an updated list of known values to update on GitHub.
 
-  Information returned from streamstats services, if is missing, in the local folders (BasinChar and BasinDel), are added.
+  If no data exists for a site in the BasinChar, BasinDel and FlowStats folders, new json files are added with that information.
+
+  If data does exist for a site, subsequent runs are compared against those existing json files.
   
-  Following run returns from the rest api are compared against populated folders (BasinDel and BasinChar). 
-  
-  Each cycle a summary file generated inside of StreamStatsIntegrationTest/Test folder. If there any difference between outputs, it will display corresponding attribute and values from both files.
+  Each cycle, a summary file is generated inside the StreamStatsIntegrationTest/Test folder. The summary file notifies you if (a) an output failed to come back, (b) an output succeeded and a new json was added, (c) if it compared the output with an existing file and it was an equal json or (d) if it compared the output with an existing file and there were differences. If (d), the differences will be displayed in the summary file.
 
 
-### Testing:
+### Core Functions:
 
-Information about reference sites can be obtained from [here](https://raw.githubusercontent.com/USGS-WiM/StreamStats-Setup/master/batchTester/testSites.geojson). 
-
-To compare results from local with remote user can run StreamStatsIntegrationTest/src/TestAgent/TestCaseGithub.py script. 
-
-Make sure to follow "How to Run" instructions same way as you would with main - IntegrationWrapperV2.py script. 
-
-Results of test run are generated inside of the StreamStatsIntegrationTest/Test folder same way as in main run.
-
+There are 3 python scripts:
+1. IntegrationWrapperV2.py
+    
+    a. This contains the main functionality to get the delination, basin chars and flow stats for each point and populate the BasinChar, BasinDel and FlowStats folders.
+2. TestCaseGithub.py
+    
+    a. This file runs a quick comparison of the jsons in the BasinChar folder with the stored values [here](https://raw.githubusercontent.com/USGS-WiM/StreamStats-Setup/master/batchTester/testSites.geojson).
+3. UpdateTestSites.py
+   
+    a. This file creates a new testSites.geojson you can copy to GitHub to update the geojson [here](https://raw.githubusercontent.com/USGS-WiM/StreamStats-Setup/master/batchTester/testSites.geojson).
+    
+    b. If your geojsons are not being read as jsons in VSCode, you can open the geojson file, click the button on the bottom right hand nav bar that says "Plain Text", select "Configure file association for .geojson", and select json. This will allow you to format geojson documents and view with the typical json coloring.
 
 ## Getting Started
 
@@ -42,29 +45,24 @@ These instructions will get you a copy of the project up and running on your loc
 ### How to run
 1. Make sure you are running right version of [python](https://www.python.org/downloads/) (3+)
 2. Open /StreamStatsIntegrationTest/src/IntegrationWrapperV2.py in Python
+    
+    a. Note that you can also run this in an IDE such as Visual Studio Code.
 3. Make sure all dependencies and modules are installed.
-4. Change config.json from StreamStatsIntegrationTest/src folder to match path of your folders
-
-Example:
-```{python}
-  "workingdirectory": "D:/Work/Integration/StreamStatsIntegrationTest/Test",
-  "outputFile": "D:/Work/Integration/StreamStatsIntegrationTest/InputCoordinates.csv"
-  ```
-5. If error ModuleNotFoundError persists make sure to add folder path to the [sys](https://docs.python.org/3.7/library/sys.html) of Python 3.
+4. If you get an error stating "ModuleNotFoundError", make sure to add the folder path to the [sys](https://docs.python.org/3.7/library/sys.html) of Python 3.
 
 ```{python}
 import sys
-sys.path.append ('D:\\Work\\Integration\\StreamStatsIntegrationTest\\src')
+sys.path.append ('C:\\path\\to\\StreamStatsIntegrationTest\\src')
 ```
 
-6. If error finding config.json file persists - setup a working directory as following, change line 25
+5. If you get an error finding the config.json file, setup a working directory as following, change line 25
 
 ```{python}
 os.chdir ('D:\\Work\\Integration\\StreamStatsIntegrationTest\\src\\')
 config = json.load(open('config.json'))
 ```
 
-7. Run
+6. Run
 
 ## Contributing
 
@@ -82,8 +80,8 @@ To push tags to remote origin: `git push origin --tags`
 
 ## Authors
 
-* **[Jeremy Newson](https://www.usgs.gov/staff-profiles/jeremy-k-newson)**  - *Lead Developer* - [USGS Web Informatics & Mapping](https://wim.usgs.gov/)
 * **[Timur Sabitov](https://github.com/tim7en)**  - *Developer* - [USGS Maryland Water Science Center](https://www.usgs.gov/centers/md-de-dc-water)
+* **[Katrin Jacobsen](https://www.usgs.gov/staff-profiles/katrin-jacobsen)**  - *Developer* - [USGS Web Informatics and Mapping](https://wim.usgs.gov)
 
 See also the list of [contributors](../../graphs/contributors) who participated in this project.
 
