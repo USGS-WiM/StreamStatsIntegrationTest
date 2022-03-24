@@ -85,6 +85,9 @@ def timing(f):
         time1 = time.time()
         ret = f(*args)
         time2 = time.time()
+        fSummary = open(sumPath, 'a') 
+        fSummary.write ('{:s} function took {:.3f} s'.format(f.__name__, (time2-time1)) + '\n')
+        fSummary.close ()
         WiMLogging().sm ('{:s} function took {:.3f} s'.format(f.__name__, (time2-time1))) #we can specify to append to a txt file
         return ret
     return wrap
@@ -331,9 +334,9 @@ def compare (inputObj, path, ID, workingDir,
                         refObj = dictOutput
                         fSummary.write (str(ID)+ ':' +'Bchar gets replaced'+ '\n')
                         fSummary.write (str(ID)+ ':' + 'Bchar in reference' + '\n')
-                        fSummary.write (refObj)
+                        fSummary.write (str(refObj))
                         fSummary.write (str(ID)+ ':' + 'Bchar from server call' + '\n')
-                        fSummary.write (dictOutput)
+                        fSummary.write (str(dictOutput))
                         counterOverwrite (sumPath, 'bcharrep')
                     counterOverwrite (sumPath, 'bchar')
                     fSummary.close ()
@@ -381,9 +384,9 @@ def compare (inputObj, path, ID, workingDir,
                         refObj = dictOutput
                         fSummary.write (str(ID)+ ':' + 'FlowStats gets replaced'+ '\n')
                         fSummary.write (str(ID)+ ':' + 'FlowStats in reference' + '\n')
-                        fSummary.write (refObj)
+                        fSummary.write (str(refObj))
                         fSummary.write (str(ID)+ ':' + 'FlowStats from server call' + '\n')
-                        fSummary.write (dictOutput)
+                        fSummary.write (str(dictOutput))
                         counterOverwrite (sumPath, 'flowstatsrep')
                     counterOverwrite (sumPath, 'flowstats')
                     fSummary.close ()
